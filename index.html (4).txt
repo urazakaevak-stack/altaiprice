@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerasimov Price</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           ЭКРАН ЗАГРУЗКИ
+           ============================================================ */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1.2s ease, visibility 1.2s ease;
+            overflow: hidden;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-scene {
+            position: relative;
+            width: 100%;
+            max-width: 750px;
+            height: 420px;
+            margin: 0 auto;
+        }
+
+        .loader-room {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 75%;
+            background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+        }
+
+        .loader-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 12%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+        }
+
+        .loader-desk {
+            position: absolute;
+            bottom: 8%;
+            left: 15%;
+            width: 70%;
+            height: 5%;
+            background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .loader-monitor {
+            position: absolute;
+            bottom: 13%;
+            left: 32%;
+            width: 36%;
+            height: 40%;
+            background: #1a1a1a;
+            border: 3px solid #3a3a3a;
+            border-radius: 8px;
+            box-shadow: 0 0 60px rgba(255,255,255,0.02);
+            overflow: hidden;
+        }
+
+        .loader-monitor-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a0a, #1a1a1a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: #666;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .loader-monitor-screen .big {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: 700;
+        }
+
+        .loader-monitor-screen .cursor {
+            display: inline-block;
+            width: 6px;
+            height: 12px;
+            background: #888;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .loader-person {
+            position: absolute;
+            bottom: 0;
+            left: 28%;
+            width: 44%;
+            height: 55%;
+            opacity: 0;
+            animation: personWalk 1.6s ease-out forwards;
+        }
+
+        @keyframes personWalk {
+            0% { opacity: 0; transform: translateX(-120px); }
+            100% { opacity: 1; transform: translateX(0px); }
+        }
+
+        .loader-person .body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 38%;
+            height: 58%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 30% 30% 0 0;
+        }
+
+        .loader-person .head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32%;
+            height: 32%;
+            background: radial-gradient(circle at 60% 40%, #d4d4d4, #b0b0b0);
+            border-radius: 50%;
+            animation: headBob 3s ease-in-out infinite;
+        }
+
+        @keyframes headBob {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) rotate(3deg); }
+        }
+
+        .loader-person .head .hair {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 60%;
+            background: radial-gradient(ellipse at 50% 100%, #1a1a1a, #0a0a0a);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .loader-person .arm-left {
+            position: absolute;
+            top: 18%;
+            left: -8%;
+            width: 22%;
+            height: 45%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 50% 50% 0 0;
+            transform: rotate(15deg);
+            transform-origin: top center;
+            animation: typingLeft 1.5s ease-in-out infinite;
+        }
+
+        .loader-person .arm-right {
+            position: absolute;
+            top: 18%;
+            right: -8%;
+            width: 22%;
+            height: 45%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 50% 50% 0 0;
+            transform: rotate(-15deg);
+            transform-origin: top center;
+            animation: typingRight 1.5s ease-in-out infinite;
+        }
+
+        @keyframes typingLeft {
+            0%, 100% { transform: rotate(15deg); }
+            50% { transform: rotate(25deg); }
+        }
+
+        @keyframes typingRight {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(-25deg); }
+        }
+
+        .loader-building {
+            position: absolute;
+            bottom: 0;
+            right: 3%;
+            width: 22%;
+            height: 45%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .loader-building .window {
+            position: absolute;
+            width: 25%;
+            height: 15%;
+            background: rgba(200,200,200,0.03);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 2px;
+        }
+
+        .loader-building .window:nth-child(1) { top: 10%; left: 12%; }
+        .loader-building .window:nth-child(2) { top: 10%; right: 12%; }
+        .loader-building .window:nth-child(3) { top: 35%; left: 12%; }
+        .loader-building .window:nth-child(4) { top: 35%; right: 12%; }
+        .loader-building .window:nth-child(5) { top: 60%; left: 12%; }
+        .loader-building .window:nth-child(6) { top: 60%; right: 12%; }
+
+        .loader-fire {
+            position: absolute;
+            top: -12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 30%;
+            background: radial-gradient(ellipse at 50% 100%, #666, #888, transparent 70%);
+            border-radius: 50% 50% 0 0;
+            animation: fireDance 0.3s ease-in-out infinite alternate;
+            filter: blur(2px);
+            box-shadow: 0 0 80px rgba(100,100,100,0.1);
+        }
+
+        @keyframes fireDance {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.05) rotate(2deg); }
+        }
+
+        .loader-fire::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 15%;
+            width: 35%;
+            height: 45%;
+            background: radial-gradient(ellipse, #777, transparent);
+            border-radius: 50%;
+            animation: fireDance2 0.4s ease-in-out infinite alternate;
+        }
+
+        .loader-fire::after {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: 15%;
+            width: 30%;
+            height: 40%;
+            background: radial-gradient(ellipse, #999, transparent);
+            border-radius: 50%;
+            animation: fireDance2 0.35s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes fireDance2 {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-8px) scale(1.2); }
+        }
+
+        .loader-smoke {
+            position: absolute;
+            top: -35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 50%;
+            background: radial-gradient(ellipse at 50% 100%, rgba(100,100,100,0.06), transparent 70%);
+            animation: smokeRise 3s ease-out infinite;
+        }
+
+        @keyframes smokeRise {
+            0% { transform: translateX(-50%) scale(0.8); opacity: 0.1; }
+            100% { transform: translateX(-50%) scale(2) translateY(-40px); opacity: 0; }
+        }
+
+        .loader-dialog {
+            position: absolute;
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px 30px;
+            max-width: 70%;
+            opacity: 0;
+            animation: dialogAppear 1s ease 1.5s forwards, dialogPulse 2s ease-in-out 2.5s infinite;
+            box-shadow: 0 10px 60px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        @keyframes dialogAppear {
+            from { opacity: 0; transform: translateX(-50%) scale(0.8) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+        }
+
+        @keyframes dialogPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.02); }
+        }
+
+        .loader-dialog .text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .loader-dialog .text .highlight {
+            color: #ff4444;
+            font-weight: 700;
+            text-shadow: 0 0 40px rgba(255,68,68,0.2);
+        }
+
+        .loader-dialog .sub-text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+            text-align: center;
+            margin-top: 8px;
+            letter-spacing: 4px;
+        }
+
+        .loader-dialog .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 20px;
+            background: #fff;
+            animation: blink 0.8s step-end infinite;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .loader-progress-container {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            max-width: 400px;
+            z-index: 20;
+        }
+
+        .loader-progress-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .loader-progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #444, #aaa, #444);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .loader-progress-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.1);
+            letter-spacing: 3px;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        /* ============================================================
+           ОСНОВНОЙ САЙТ
+           ============================================================ */
+        #main-site {
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease;
+            min-height: 100vh;
+        }
+
+        #main-site.visible {
+            opacity: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .nav-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #888, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.3);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-links .tg-link {
+            color: rgba(255,255,255,0.15);
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links .tg-link:hover {
+            color: #fff;
+        }
+
+        /* ===== ГЛАВНЫЙ ЭКРАН ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 60px;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+
+        .hero-scene {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .hero-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+        }
+
+        .hero-desk {
+            position: absolute;
+            bottom: 18%;
+            left: 15%;
+            width: 70%;
+            height: 4%;
+            background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+            border-radius: 5px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .hero-monitor {
+            position: absolute;
+            bottom: 22%;
+            left: 32%;
+            width: 36%;
+            height: 35%;
+            background: #1a1a1a;
+            border: 2px solid #3a3a3a;
+            border-radius: 6px;
+            box-shadow: 0 0 60px rgba(255,255,255,0.02);
+            overflow: hidden;
+        }
+
+        .hero-monitor-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a0a, #1a1a1a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: #666;
+            padding: 10px;
+            text-align: center;
+            animation: terminalPulse 3s ease-in-out infinite;
+        }
+
+        .hero-monitor-screen .big {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: 700;
+        }
+
+        .hero-monitor-screen .cursor {
+            display: inline-block;
+            width: 6px;
+            height: 12px;
+            background: #888;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes terminalPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero-person {
+            position: absolute;
+            bottom: 0;
+            left: 28%;
+            width: 44%;
+            height: 55%;
+        }
+
+        .hero-person .body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 38%;
+            height: 58%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 30% 30% 0 0;
+        }
+
+        .hero-person .head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32%;
+            height: 32%;
+            background: radial-gradient(circle at 60% 40%, #d4d4d4, #b0b0b0);
+            border-radius: 50%;
+            animation: headBob 4s ease-in-out infinite;
+        }
+
+        @keyframes headBob {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) rotate(3deg); }
+        }
+
+        .hero-person .head .hair {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 60%;
+            background: radial-gradient(ellipse at 50% 100%, #1a1a1a, #0a0a0a);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .hero-person .arm-left {
+            position: absolute;
+            top: 18%;
+            left: -8%;
+            width: 22%;
+            height: 45%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 50% 50% 0 0;
+            transform: rotate(15deg);
+            transform-origin: top center;
+            animation: typingLeft 1.5s ease-in-out infinite;
+        }
+
+        .hero-person .arm-right {
+            position: absolute;
+            top: 18%;
+            right: -8%;
+            width: 22%;
+            height: 45%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 50% 50% 0 0;
+            transform: rotate(-15deg);
+            transform-origin: top center;
+            animation: typingRight 1.5s ease-in-out infinite;
+        }
+
+        @keyframes typingLeft {
+            0%, 100% { transform: rotate(15deg); }
+            50% { transform: rotate(25deg); }
+        }
+
+        @keyframes typingRight {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(-25deg); }
+        }
+
+        .hero-school {
+            position: absolute;
+            bottom: 0;
+            right: 3%;
+            width: 22%;
+            height: 45%;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .hero-school .window {
+            position: absolute;
+            width: 25%;
+            height: 15%;
+            background: rgba(200,200,200,0.03);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 2px;
+        }
+
+        .hero-school .window:nth-child(1) { top: 10%; left: 12%; }
+        .hero-school .window:nth-child(2) { top: 10%; right: 12%; }
+        .hero-school .window:nth-child(3) { top: 35%; left: 12%; }
+        .hero-school .window:nth-child(4) { top: 35%; right: 12%; }
+        .hero-school .window:nth-child(5) { top: 60%; left: 12%; }
+        .hero-school .window:nth-child(6) { top: 60%; right: 12%; }
+
+        .hero-fire {
+            position: absolute;
+            top: -12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 30%;
+            background: radial-gradient(ellipse at 50% 100%, #666, #888, transparent 70%);
+            border-radius: 50% 50% 0 0;
+            animation: fireDance 0.3s ease-in-out infinite alternate;
+            filter: blur(2px);
+            box-shadow: 0 0 80px rgba(100,100,100,0.1);
+        }
+
+        @keyframes fireDance {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.05) rotate(2deg); }
+        }
+
+        .hero-fire::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 15%;
+            width: 35%;
+            height: 45%;
+            background: radial-gradient(ellipse, #777, transparent);
+            border-radius: 50%;
+            animation: fireDance2 0.4s ease-in-out infinite alternate;
+        }
+
+        .hero-fire::after {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: 15%;
+            width: 30%;
+            height: 40%;
+            background: radial-gradient(ellipse, #999, transparent);
+            border-radius: 50%;
+            animation: fireDance2 0.35s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes fireDance2 {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-8px) scale(1.2); }
+        }
+
+        .hero-smoke {
+            position: absolute;
+            top: -35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 50%;
+            background: radial-gradient(ellipse at 50% 100%, rgba(100,100,100,0.06), transparent 70%);
+            animation: smokeRise 3s ease-out infinite;
+        }
+
+        @keyframes smokeRise {
+            0% { transform: translateX(-50%) scale(0.8); opacity: 0.1; }
+            100% { transform: translateX(-50%) scale(2) translateY(-40px); opacity: 0; }
+        }
+
+        .hero-dialog {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.92);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 16px 28px;
+            max-width: 60%;
+            animation: dialogAppear 1s ease 1s forwards, dialogFloat 3s ease-in-out 2s infinite;
+            box-shadow: 0 10px 60px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        @keyframes dialogAppear {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+        }
+
+        @keyframes dialogFloat {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .hero-dialog .text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.4rem;
+            color: #ddd;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .hero-dialog .text .highlight {
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 0 40px rgba(255,255,255,0.05);
+        }
+
+        .hero-dialog .text .danger {
+            color: #ff4444;
+            font-weight: 700;
+            text-shadow: 0 0 40px rgba(255,68,68,0.1);
+        }
+
+        .hero-dialog .sub-text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.15);
+            text-align: center;
+            margin-top: 6px;
+            letter-spacing: 4px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 20;
+            max-width: 800px;
+            animation: fadeInUp 1.5s ease;
+            background: rgba(10, 10, 10, 0.3);
+            padding: 40px 50px;
+            border-radius: 24px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-content .main-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #888, #fff, #888);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+            letter-spacing: 5px;
+            line-height: 1.1;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-content .tagline {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.2);
+            margin: 12px 0 25px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+        }
+
+        .hero-content .profile-link {
+            display: inline-block;
+            padding: 12px 35px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+
+        .hero-content .profile-link:hover {
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 0 40px rgba(255,255,255,0.02);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .hero-content .profile-link i {
+            margin-right: 8px;
+        }
+
+        /* ============================================================
+           ПРАЙС
+           ============================================================ */
+        .price-section {
+            padding: 60px 30px 80px;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .price-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            text-align: center;
+            background: linear-gradient(135deg, #888, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .price-section .sub {
+            text-align: center;
+            color: rgba(255,255,255,0.15);
+            font-size: 1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .price-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.4s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255,255,255,0.08);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .price-card .icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .price-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 2px;
+        }
+
+        .price-card .amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        .price-card .desc {
+            color: rgba(255,255,255,0.25);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .price-card .note {
+            color: rgba(255,255,255,0.1);
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+
+        /* ============================================================
+           СПОСОБЫ ОПЛАТЫ
+           ============================================================ */
+        .payments-section {
+            padding: 30px 20px 50px;
+            text-align: center;
+            background: rgba(255,255,255,0.005);
+            border-top: 1px solid rgba(255,255,255,0.01);
+            border-bottom: 1px solid rgba(255,255,255,0.01);
+            margin: 0 20px 40px;
+            border-radius: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .payments-section .pay-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.15);
+            margin-bottom: 15px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .payments-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .pay-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.01);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: all 0.3s;
+            min-width: 50px;
+        }
+
+        .pay-item:hover {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .pay-item i {
+            font-size: 1.3rem;
+            color: #888;
+        }
+
+        .pay-item .pay-name {
+            font-size: 0.45rem;
+            color: rgba(255,255,255,0.1);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+           ФОРМА ЗАКАЗА (С ХЕШТЕГАМИ)
+           ============================================================ */
+        .order-section {
+            padding: 40px 20px 60px;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .order-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #888, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .order-section .sub {
+            text-align: center;
+            color: rgba(255,255,255,0.15);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .order-form {
+            background: rgba(255,255,255,0.005);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.01);
+        }
+
+        .order-form .form-group {
+            margin-bottom: 18px;
+        }
+
+        .order-form label {
+            display: block;
+            color: rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .order-form select,
+        .order-form input,
+        .order-form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .order-form select option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .order-form select:focus,
+        .order-form input:focus,
+        .order-form textarea:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .order-form textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .order-form .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #444, #888);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .order-form .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(255,255,255,0.05);
+        }
+
+        /* ============================================================
+           ФУТЕР
+           ============================================================ */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid rgba(255,255,255,0.01);
+            color: rgba(255,255,255,0.06);
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ============================================================
+           АДАПТИВ
+           ============================================================ */
+        @media (max-width: 768px) {
+            nav { padding: 12px 20px; flex-direction: column; gap: 8px; }
+            .nav-logo { font-size: 1.2rem; }
+            .nav-links { gap: 15px; }
+            .nav-links a { font-size: 0.7rem; }
+            .hero-content { padding: 25px 20px; }
+            .hero-content .main-logo { font-size: 2.5rem; }
+            .hero-content .tagline { font-size: 0.8rem; letter-spacing: 4px; }
+            .hero-dialog { top: 5%; max-width: 80%; padding: 12px 18px; }
+            .hero-dialog .text { font-size: 1rem; }
+            .hero-monitor { width: 30%; height: 25%; bottom: 20%; left: 30%; }
+            .hero-person { height: 40%; left: 25%; width: 50%; }
+            .hero-school { width: 15%; height: 30%; right: 2%; }
+            .price-section { padding: 40px 20px 60px; }
+            .price-section h2 { font-size: 2rem; }
+            .price-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .price-card { padding: 18px 15px; }
+            .price-card .amount { font-size: 1.5rem; }
+            .payments-grid { gap: 10px; }
+            .pay-item { padding: 6px 10px; min-width: 40px; }
+            .pay-item i { font-size: 1rem; }
+            .order-form { padding: 20px; }
+            .loader-scene { height: 320px; }
+            .loader-dialog { max-width: 85%; padding: 14px 18px; }
+            .loader-dialog .text { font-size: 1.1rem; }
+            .loader-monitor { width: 30%; height: 30%; bottom: 15%; left: 30%; }
+            .loader-person { height: 45%; left: 25%; width: 50%; }
+            .loader-building { width: 15%; height: 35%; right: 2%; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content .main-logo { font-size: 1.8rem; }
+            .hero-content { padding: 20px 15px; }
+            .hero-content .profile-link { font-size: 0.8rem; padding: 10px 20px; }
+            .hero-dialog .text { font-size: 0.8rem; }
+            .hero-dialog { max-width: 90%; padding: 10px 14px; }
+            .price-grid { grid-template-columns: 1fr; }
+            .order-section h2 { font-size: 1.5rem; }
+            .nav-logo { font-size: 1rem; }
+            .hero-monitor { width: 25%; height: 18%; bottom: 18%; }
+            .hero-person { height: 30%; }
+            .hero-school { width: 12%; height: 22%; }
+            .loader-scene { height: 260px; }
+            .loader-dialog { max-width: 92%; padding: 10px 14px; }
+            .loader-dialog .text { font-size: 0.9rem; }
+            .loader-monitor { width: 25%; height: 22%; bottom: 13%; }
+            .loader-person { height: 35%; }
+            .loader-building { width: 12%; height: 28%; }
+            .loader-progress-container { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+         ЭКРАН ЗАГРУЗКИ
+         ============================================================ -->
+    <div id="loader">
+        <div class="loader-scene">
+            <div class="loader-room">
+                <div class="loader-floor"></div>
+                <div class="loader-desk"></div>
+                <div class="loader-monitor">
+                    <div class="loader-monitor-screen">
+                        <span class="big">Gerasimov</span>
+                        <span>Price</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+                <div class="loader-person">
+                    <div class="body"></div>
+                    <div class="head">
+                        <div class="hair"></div>
+                    </div>
+                    <div class="arm-left"></div>
+                    <div class="arm-right"></div>
+                </div>
+                <div class="loader-building">
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="loader-fire"></div>
+                    <div class="loader-smoke"></div>
+                </div>
+            </div>
+
+            <div class="loader-dialog">
+                <div class="text">
+                    Вы шо <span class="highlight">бессмертные</span>?<br>
+                    <span style="font-size:1.2rem;">Откуп где?</span>
+                    <span class="typing-cursor"></span>
+                </div>
+                <div class="sub-text">⏳ Время пошло...</div>
+            </div>
+
+            <div class="loader-progress-container">
+                <div class="loader-progress-bar">
+                    <div class="loader-progress-fill" id="progressFill"></div>
+                </div>
+                <div class="loader-progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         ОСНОВНОЙ САЙТ
+         ============================================================ -->
+    <div id="main-site">
+
+        <nav>
+            <div class="nav-logo">⚔ GERASIMOV PRICE</div>
+            <div class="nav-links">
+                <a href="#price">Прайс</a>
+                <a href="#order">Заказать</a>
+                <a href="https://t.me/Godgerasimov" target="_blank" class="tg-link">
+                    <i class="fab fa-telegram"></i>
+                </a>
+            </div>
+        </nav>
+
+        <section class="hero" id="hero">
+            <div class="hero-scene">
+                <div class="hero-floor"></div>
+                <div class="hero-desk"></div>
+                <div class="hero-monitor">
+                    <div class="hero-monitor-screen">
+                        <span class="big">Gerasimov</span>
+                        <span>Price</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+                <div class="hero-person">
+                    <div class="body"></div>
+                    <div class="head">
+                        <div class="hair"></div>
+                    </div>
+                    <div class="arm-left"></div>
+                    <div class="arm-right"></div>
+                </div>
+                <div class="hero-school">
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="hero-fire"></div>
+                    <div class="hero-smoke"></div>
+                </div>
+                <div class="hero-dialog">
+                    <div class="text">
+                        <span class="danger">⚠</span> <span class="highlight">ВЫ ЗАМИНИРОВАНЫ</span> <span class="danger">⚠</span>
+                    </div>
+                    <div class="sub-text">У вас 5 минут на откуп</div>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <div class="main-logo">GERASIMOV PRICE</div>
+                <p class="tagline">✦ Всё под контролем ✦</p>
+                <a href="https://t.me/Godgerasimov" target="_blank" class="profile-link">
+                    <i class="fab fa-telegram"></i> @Godgerasimov
+                </a>
+            </div>
+        </section>
+
+        <!-- ПРАЙС -->
+        <section class="price-section" id="price">
+            <h2>Услуги</h2>
+            <p class="sub">Выбери нужное</p>
+
+            <div class="price-grid">
+                <div class="price-card">
+                    <span class="icon">🔍</span>
+                    <h3>Снос</h3>
+                    <div class="amount">500 ₽</div>
+                    <div class="desc">Быстро и качественно</div>
+                </div>
+
+                <div class="price-card">
+                    <span class="icon">📊</span>
+                    <h3>Пробить</h3>
+                    <div class="amount">700 ₽</div>
+                    <div class="desc">Полная информация</div>
+                </div>
+
+                <div class="price-card">
+                    <span class="icon">🛡️</span>
+                    <h3>Деф</h3>
+                    <div class="amount">500 ₽</div>
+                    <div class="desc">Надёжная защита</div>
+                    <div class="note">1000 ₽ — навсегда</div>
+                </div>
+
+                <div class="price-card">
+                    <span class="icon">⚡</span>
+                    <h3>Сват</h3>
+                    <div class="amount">1500 ₽</div>
+                    <div class="desc">Максимальный эффект</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- СПОСОБЫ ОПЛАТЫ -->
+        <div class="payments-section">
+            <p class="pay-label">💎 Способы оплаты</p>
+            <div class="payments-grid">
+                <div class="pay-item"><i class="fas fa-paint-brush"></i><span class="pay-name">NFT</span></div>
+                <div class="pay-item"><i class="fas fa-star" style="color: #ffd700;"></i><span class="pay-name">STARS</span></div>
+                <div class="pay-item"><i class="fas fa-dollar-sign"></i><span class="pay-name">DOLLAR</span></div>
+                <div class="pay-item"><i class="fas fa-ruble-sign"></i><span class="pay-name">RUB</span></div>
+                <div class="pay-item"><i class="fab fa-telegram-plane"></i><span class="pay-name">TON</span></div>
+                <div class="pay-item"><i class="fab fa-bitcoin"></i><span class="pay-name">USDT</span></div>
+                <div class="pay-item"><i class="fas fa-gem"></i><span class="pay-name">GRAM</span></div>
+                <div class="pay-item"><i class="fas fa-mobile-alt"></i><span class="pay-name">СБП</span></div>
+                <div class="pay-item"><i class="fas fa-university"></i><span class="pay-name">Т-БАНК</span></div>
+            </div>
+        </div>
+
+        <!-- ФОРМА ЗАКАЗА -->
+        <section class="order-section" id="order">
+            <h2>Оформить заказ</h2>
+            <p class="sub">Заполни форму — я свяжусь с тобой</p>
+
+            <div class="order-form">
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label>Выбери услугу</label>
+                        <select id="service" required>
+                            <option value="">— Выбери услугу —</option>
+                            <option value="Снос">🔍 Снос — 500 ₽</option>
+                            <option value="Пробить">📊 Пробить — 700 ₽</option>
+                            <option value="Деф (месяц)">🛡️ Деф (месяц) — 500 ₽</option>
+                            <option value="Деф (навсегда)">🛡️ Деф (навсегда) — 1000 ₽</option>
+                            <option value="Сват">⚡ Сват — 1500 ₽</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ваш Telegram</label>
+                        <input type="text" id="telegram" placeholder="@username" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Комментарий</label>
+                        <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">⚔ Отправить заказ</button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Gerasimov Price. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <script>
+        // ===== ЗАГРУЗКА =====
+        let progress = 0;
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const loader = document.getElementById('loader');
+        const mainSite = document.getElementById('main-site');
+
+        function updateLoader() {
+            const interval = setInterval(() => {
+                const step = Math.floor(Math.random() * 8) + 3;
+                progress = Math.min(progress + step, 100);
+                progressFill.style.width = progress + '%';
+                progressText.textContent = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                        mainSite.classList.add('visible');
+                        document.body.style.overflow = 'auto';
+                    }, 500);
+                }
+            }, 120);
+        }
+
+        setTimeout(updateLoader, 300);
+
+        // ============================================================
+        // ===== ФОРМА ЗАКАЗА С ХЕШТЕГАМИ =====
+        // ============================================================
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const service = document.getElementById('service').value;
+            const telegram = document.getElementById('telegram').value;
+            const comment = document.getElementById('comment').value;
+
+            // Маппинг услуг на хештеги
+            const hashtags = {
+                'Снос': '#СНОС',
+                'Пробить': '#ПРОБИТЬ',
+                'Деф (месяц)': '#ДЕФ',
+                'Деф (навсегда)': '#ДЕФ',
+                'Сват': '#СВАТ'
+            };
+
+            const hashtag = hashtags[service] || '#ЗАКАЗ';
+
+            if (!service || !telegram) {
+                alert('⚠️ Заполните все поля!');
+                return;
+            }
+
+            // Показываем сообщение об успехе с хештегом
+            alert(`✅ УСПЕШНО ОТПРАВЛЕН ЗАКАЗ!\n\nОтпишите Герасиму: ${hashtag}`);
+
+            // Формируем сообщение для Telegram
+            const message = `${hashtag}\n\n📌 Услуга: ${service}\n📱 Telegram: ${telegram}\n💬 Комментарий: ${comment || '—'}`;
+
+            // Открываем Telegram с готовым сообщением
+            window.open(`https://t.me/Godgerasimov?text=${encodeURIComponent(message)}`, '_blank');
+
+            // Сбрасываем форму
+            this.reset();
+        });
+
+        // ===== ПРОКРУТКА =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
